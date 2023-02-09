@@ -19,8 +19,11 @@ def main():
         download_file(config['all_tradable_etfs'], all_tradable_etfs)
 
     df = pd.read_excel('target/all_tradable_etfs.xls')
-    etf = map_xls(df)
-    print(etf)
+
+    etfs = []
+    for row in df.itertuples():
+        etfs.append(map_xls(row))
+    print(etfs)
 
 
 def download_file(url: str, filename: str, timeout: int = 10):
