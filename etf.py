@@ -1,7 +1,7 @@
 class Etf:
     def __init__(self, name, isin, product_family, xetra_symbol, reuters_code, bloomberg_ticker, ter,
                  distribution_policy, replication_method, fund_currency, trading_currency, inav_reuters, inav_bloomberg,
-                 benchmark, homepage):
+                 benchmark: str = '', homepage: str = ''):
         self.name = name
         self.isin = isin
         self.product_family = product_family
@@ -23,6 +23,13 @@ class Etf:
 
     def __repr__(self):
         return f'{self.name} {self.isin}'
+
+    def compare(self, other):
+        differences = []
+        for key in self.__dict__.keys():
+            if self.__dict__[key] != other.__dict__[key]:
+                differences.append(key)
+        return differences
 
 
 xls_mapping = {
