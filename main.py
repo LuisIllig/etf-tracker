@@ -1,5 +1,6 @@
 from dotenv import dotenv_values
 from etf import map_xls
+from pymongo import MongoClient
 
 import sys
 import requests
@@ -23,7 +24,11 @@ def main():
     etfs = []
     for row in df.itertuples():
         etfs.append(map_xls(row))
-    print(etfs)
+
+    mongo_client = MongoClient(config['mongo_uri'])
+    db = mongo_client.masterdata
+    coll = db.etfs
+    # coll.insert_many([etf.__dict__ for etf in etfs])
 
 
 def download_file(url: str, filename: str, timeout: int = 10):
