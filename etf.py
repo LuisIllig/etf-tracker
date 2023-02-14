@@ -1,7 +1,10 @@
 class Etf:
-    def __init__(self, name, isin, product_family, xetra_symbol, reuters_code, bloomberg_ticker, ter,
-                 distribution_policy, replication_method, fund_currency, trading_currency, inav_reuters, inav_bloomberg,
+    def __init__(self, name: str = '', isin: str = '', product_family: str = '', xetra_symbol: str = '',
+                 reuters_code: str = '', bloomberg_ticker: str = '', ter: float = 0.0,
+                 distribution_policy: str = '', replication_method: str = '', fund_currency: str = '',
+                 trading_currency: str = '', inav_reuters: str = '', inav_bloomberg: str = '',
                  benchmark: str = '', homepage: str = ''):
+        self.id = f'{isin}_{xetra_symbol}_{reuters_code}_{bloomberg_ticker}'
         self.name = name
         self.isin = isin
         self.product_family = product_family
