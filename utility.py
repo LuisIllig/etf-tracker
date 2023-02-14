@@ -1,5 +1,7 @@
 import sys
 import requests
+import hashlib
+import os
 
 
 def download_file(url: str, filename: str, timeout: int = 10):
@@ -23,3 +25,23 @@ def download_file(url: str, filename: str, timeout: int = 10):
         print(f'\ndownloaded {filename} from {url}...')
     except requests.exceptions.Timeout:
         sys.exit(f'Error: Timeout while connecting to server {url}')
+
+
+def replace_if_more_recent(file1: str, file2: str):
+    if is_file_newer(file1, file2):
+        os.remove(file2)
+        os.rename(file1, file2)
+    else:
+        os.remove(file1)
+
+
+def is_file_newer(file1: str, file2: str) -> bool:
+    return get_hash(file1) != get_hash(file2)
+
+
+def get_hash(file: str) -> str:
+    sha256_hash = hashlib.sha256()
+    with open(file, "rb") as f:
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
