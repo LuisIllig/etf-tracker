@@ -5,18 +5,20 @@ import pandas as pd
 
 
 class Masterdata:
-    def __init__(self, config, db):
+    def __init__(self, config, db, dryrun: bool = False):
         self.config = config
         self.db = db
+        self.dryrun = dryrun
         self.etfs = []
 
-    def update(self, skip_download: bool = False):
-        self.download_masterdata(skip_download)
+    def update(self) -> list[Etf]:
+        self.download_masterdata()
         self.etfs = self.parse_masterdata()
         self.update_masterdata(self.etfs)
+        return self.etfs
 
-    def download_masterdata(self, skip: bool = False):
-        if skip:
+    def download_masterdata(self):
+        if self.dryrun:
             print('Skipping download of master data...')
             return
 
@@ -45,6 +47,10 @@ class Masterdata:
         return etfs
 
     def update_masterdata(self, etfs: list[Etf]):
+        if self.dryrun:
+            print('Skipping update of master data...')
+            return
+
         print('Updating master data...')
         coll = self.db.masterdata
 
