@@ -3,6 +3,8 @@ import requests
 import hashlib
 import os
 
+from bs4 import BeautifulSoup
+
 
 def download_file(url: str, filename: str, timeout: int = 10):
     try:
@@ -45,3 +47,13 @@ def get_hash(file: str) -> str:
         for byte_block in iter(lambda: f.read(4096), b""):
             sha256_hash.update(byte_block)
     return sha256_hash.hexdigest()
+
+
+def get_soup(url: str, timeout: int = 10) -> BeautifulSoup:
+    try:
+        response = requests.get(url, timeout=timeout)
+        if response.status_code != 200:
+            sys.exit(f'Error: Could not connect to server {url} with status code {response.status_code}')
+        return BeautifulSoup(response.text, 'html.parser')
+    except requests.exceptions.Timeout:
+        sys.exit(f'Error: Timeout while connecting to server {url}')
