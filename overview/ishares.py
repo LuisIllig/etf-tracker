@@ -9,8 +9,9 @@ from utility import get_soup
 
 
 base_url = 'https://www.ishares.com'
-product_list_url = '/de/privatanleger/de/produkte/etf-investments?switchLocale=y&siteEntryPassthrough=true&showAll=true#/?productView=all&pageNumber=1&sortColumn=totalFundSizeInMillions&sortDirection=desc&dataView=keyFacts&keyFacts=all&showAll=true'
-
+passthrough_parameters = '?switchLocale=y&siteEntryPassthrough=true'
+list_parameters = '&showAll=true#/?productView=all&pageNumber=1&sortColumn=totalFundSizeInMillions&sortDirection=desc&dataView=keyFacts&keyFacts=all&showAll=true'
+product_list_url = f'/de/privatanleger/de/produkte/etf-investments{passthrough_parameters}{list_parameters}'
 
 class IShares(OverviewScrapper):
     def __init__(self, etf: Etf, db: Database):
@@ -20,7 +21,7 @@ class IShares(OverviewScrapper):
         print(self.etf.isin)
         product_url = self.search_etf()
         if product_url is not None:
-            soup = get_soup(base_url + product_url)
+            soup = get_soup(base_url + product_url + passthrough_parameters)
             performance = self.get_performance(soup)
             portfolio = self.get_portfolio(soup)
             overview = Overview(self.etf.id, performance, portfolio)
@@ -34,8 +35,29 @@ class IShares(OverviewScrapper):
             return a['href']
         return None
 
+    # noinspection PyMethodMayBeStatic
     def get_performance(self, soup: BeautifulSoup) -> list[Performance]:
-        pass
+        table = soup.find('table', {'class': 'product-table border-row calendar-year'})
+
+        thead = table.find('thead')
+        ths = thead.find_all('th')
+        performance = []
+        for th in range(1, len(ths)):
+            performance.append(Performance(ths[th].text, None, None))
+
+        tbody = soup.find('tbody')
+        trs = tbody.find_all('tr')
+        tr_total_return = trs[0]
+        tr_benchmark = trs[1]
+
+        tds = tr_total_return.find_all('td')
+        for td in range(1, len(tds)):
+            performance[td - 1].total_return = tds[td].text.replace('\n', '')
+        tds = tr_benchmark.find_all('td')
+        for td in range(1, len(tds)):
+            performance[td - 1].benchmark = tds[td].text.replace('\n', '')
+
+        return performance
 
     def get_portfolio(self, soup: BeautifulSoup) -> Portfolio:
         pass

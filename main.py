@@ -15,7 +15,7 @@ def main():
     print(config['tracked_etfs'])
     for etf in etfs:
         if etf.isin in config['tracked_etfs']:
-            strategy_selector(etf).get_overview()
+            strategy_selector(etf, db).get_overview()
 
 
 if __name__ == '__main__':

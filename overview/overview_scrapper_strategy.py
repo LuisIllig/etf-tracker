@@ -1,3 +1,5 @@
+from pymongo.database import Database
+
 from overview.overview_scrapper import OverviewScrapper
 from overview.ishares import IShares
 from overview.amundi import Amundi
@@ -12,11 +14,11 @@ class OverviewScrapperStrategy:
         return self.scrapper.get_overview()
 
 
-def strategy_selector(etf: Etf):
+def strategy_selector(etf: Etf, db: Database):
     strategy = None
     match etf.product_family:
         case 'Amundi':
-            strategy = Amundi(etf)
+            strategy = Amundi(etf, db)
         case 'iShares':
-            strategy = IShares(etf)
+            strategy = IShares(etf, db)
     return OverviewScrapperStrategy(strategy)
