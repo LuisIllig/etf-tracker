@@ -11,15 +11,29 @@ class Performance:
         return self.__str__()
 
 
+class Position:
+    def __init__(self, ticker: str, name: str, sector: str, _type: str, weight: float):
+        self.ticker = ticker
+        self.name = name
+        self.sector = sector
+        self.type = _type
+        self.weight = weight
+
+    def __str__(self):
+        return f'Ticker: {self.ticker} Name: {self.name} Sector: {self.sector} Type: {self.type} Weight: {self.weight}'
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class Portfolio:
-    def __init__(self, top_holdings: list[dict[str, int]], exposure: list[str], sector: list[str], geography: list[str]):
-        self.top_holdings = top_holdings
-        self.exposure = exposure
+    def __init__(self, positions: list[Position], sector: list[str], geography: list[str]):
+        self.positions = positions
         self.sector = sector
         self.geography = geography
 
     def __str__(self):
-        return f'Top Holdings: {self.top_holdings} Exposure: {self.exposure} Sector: {self.sector} Geography: {self.geography}'
+        return f'Top Holdings: {self.positions} Sector: {self.sector} Geography: {self.geography}'
 
     def __repr__(self):
         return self.__str__()

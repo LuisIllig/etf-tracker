@@ -5,7 +5,9 @@ from overview.overview_scrapper import OverviewScrapper
 from etf import Etf
 from bs4 import BeautifulSoup
 
-from utility import get_soup
+from utility import get_soup, download_file
+
+import pandas as pd
 
 
 base_url = 'https://www.ishares.com'
@@ -13,18 +15,20 @@ passthrough_parameters = '?switchLocale=y&siteEntryPassthrough=true'
 list_parameters = '&showAll=true#/?productView=all&pageNumber=1&sortColumn=totalFundSizeInMillions&sortDirection=desc&dataView=keyFacts&keyFacts=all&showAll=true'
 product_list_url = f'/de/privatanleger/de/produkte/etf-investments{passthrough_parameters}{list_parameters}'
 
+
+# noinspection PyMethodMayBeStatic
 class IShares(OverviewScrapper):
     def __init__(self, etf: Etf, db: Database):
         super().__init__(etf, db)
 
-    def get_overview(self):
+    def get_overview(self, dryrun: bool = False):
         print(self.etf.isin)
         product_url = self.search_etf()
         if product_url is not None:
             soup = get_soup(base_url + product_url + passthrough_parameters)
             performance = self.get_performance(soup)
-            portfolio = self.get_portfolio(soup)
-            overview = Overview(self.etf.id, performance, portfolio)
+            portfolio = self.get_portfolio(soup, dryrun)
+            return Overview(self.etf.id, performance, portfolio)
         else:
             print(f'No product found for {self.etf.isin}: {self.etf.name}')
 
@@ -35,7 +39,6 @@ class IShares(OverviewScrapper):
             return a['href']
         return None
 
-    # noinspection PyMethodMayBeStatic
     def get_performance(self, soup: BeautifulSoup) -> list[Performance]:
         table = soup.find('table', {'class': 'product-table border-row calendar-year'})
 
@@ -59,8 +62,21 @@ class IShares(OverviewScrapper):
 
         return performance
 
-    def get_portfolio(self, soup: BeautifulSoup) -> Portfolio:
+    def get_portfolio(self, soup: BeautifulSoup, dryrun: bool) -> Portfolio:
+        positions = self.get_positions(soup, dryrun)
+        return Portfolio(positions, [], [])
         pass
+
+    def get_positions(self, soup: BeautifulSoup, dryrun: bool) -> list[Position]:
+        href = soup.find('a', {'class': 'icon-xls-export', 'data-link-event': 'holdings:holdings'})['href']
+        csv_file = f'target/{self.etf.isin}.csv'
+        if not dryrun:
+            download_file(base_url + href, csv_file)
+        positions = []
+        df = pd.read_csv(csv_file, sep=',', skiprows=2, skipfooter=1)
+        for index, row in df.iterrows():
+            positions.append(Position(row[0], row[1], row[2], row[3], row[5]))
+        return positions
 
     def update_overview(self, overview: Overview):
         pass

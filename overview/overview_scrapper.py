@@ -11,5 +11,5 @@ class OverviewScrapper(ABC):
         self.db = db
 
     @abstractmethod
-    def get_overview(self):
+    def get_overview(self, dryrun: bool = False):
         pass

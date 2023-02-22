@@ -11,5 +11,5 @@ class Amundi(OverviewScrapper):
     def __init__(self, etf: Etf, db: Database):
         super().__init__(etf, db)
 
-    def get_overview(self):
+    def get_overview(self, dryrun: bool = False):
         print(self.etf.isin)

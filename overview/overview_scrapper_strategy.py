@@ -10,8 +10,8 @@ class OverviewScrapperStrategy:
     def __init__(self, scrapper: OverviewScrapper):
         self.scrapper = scrapper
 
-    def get_overview(self):
-        return self.scrapper.get_overview()
+    def get_overview(self, dryrun: bool = False):
+        return self.scrapper.get_overview(dryrun)
 
 
 def strategy_selector(etf: Etf, db: Database):
