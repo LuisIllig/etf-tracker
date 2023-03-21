@@ -5,3 +5,6 @@ openpyxl~=3.1.0
 pymongo~=4.3.3
 pytest~=7.2.1
 beautifulsoup4~=4.11.2
+requests-html==0.10.0
+jsoncomment~=0.4.2
+pyppeteer==1.0.2

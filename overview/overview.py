@@ -26,8 +26,32 @@ class Position:
         return self.__str__()
 
 
+class Sector:
+    def __init__(self, category: str, fonds: int):
+        self.category = category
+        self.fonds = fonds
+
+    def __str__(self):
+        return f'Category: {self.category} Fonds: {self.fonds}'
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class Geography:
+    def __init__(self, country: str, fonds: int):
+        self.country = country
+        self.fonds = fonds
+
+    def __str__(self):
+        return f'Country: {self.country} Fonds: {self.fonds}'
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class Portfolio:
-    def __init__(self, positions: list[Position], sector: list[str], geography: list[str]):
+    def __init__(self, positions: list[Position], sector: list[Sector], geography: list[Geography]):
         self.positions = positions
         self.sector = sector
         self.geography = geography
