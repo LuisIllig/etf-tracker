@@ -3,6 +3,7 @@ from pymongo.database import Database
 from overview.overview_scrapper import OverviewScrapper
 from overview.ishares import IShares
 from overview.amundi import Amundi
+from overview.justetf import JustETF
 from etf import Etf
 
 
@@ -18,7 +19,7 @@ def strategy_selector(etf: Etf, db: Database):
     strategy = None
     match etf.product_family:
         case 'Amundi':
-            strategy = Amundi(etf, db)
+            strategy = JustETF(etf, db)
         case 'iShares':
             strategy = IShares(etf, db)
     return OverviewScrapperStrategy(strategy)
